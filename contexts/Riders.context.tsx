@@ -11,11 +11,17 @@ import { Rider } from "@/dtos/Rider.dto";
 
 export type RidersContextProps = {
   riders: Array<Rider>;
+  assignedOrders: string[];
+};
+
+const defaultRidersContext: RidersContextProps = {
+  riders: [],
+  assignedOrders: [],
 };
 
 export const RidersContext = createContext<RidersContextProps>(
   // @ts-ignore
-  {}
+  defaultRidersContext
 );
 
 export type RidersProviderProps = {
@@ -25,6 +31,7 @@ export type RidersProviderProps = {
 export function RidersProvider(props: RidersProviderProps) {
   const [riders, setRiders] = useState<Array<Rider>>([]);
   const [assignedOrders, setAssignedOrders] = useState<string[]>([]);
+
   const { orders, pickup } = useOrders();
 
   useEffect(() => {
@@ -43,7 +50,27 @@ export function RidersProvider(props: RidersProviderProps) {
     }
   }, [orders]);
 
-  const context = { riders };
+  useEffect(() => {
+    riders.forEach((rider) => {
+      const orderToPickup = orders.find(
+        (order) => order.id === rider.orderWanted && order.state === "READY"
+      );
+
+      setTimeout(() => {
+        if (orderToPickup) {
+          setRiders((prev) =>
+            prev.filter((r) => r.orderWanted !== rider.orderWanted)
+          );
+          setAssignedOrders((prev) =>
+            prev.filter((orderId) => orderId !== rider.orderWanted)
+          );
+        }
+      }, 5000);
+    });
+  }, [orders]);
+
+  const context = { riders, assignedOrders };
+
   return (
     <RidersContext.Provider value={context}>
       {props.children}
