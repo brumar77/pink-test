@@ -7,11 +7,10 @@ import {
   useEffect,
   useState,
 } from "react";
-import { RidersContext, useRiders } from "./Riders.context";
 
 export type OrdersContextProps = {
   orders: Array<Order>;
-  pickup: (order: Order) => void;
+  pickup: (order: Order, changeForRequestRider?: boolean) => void;
   uploadState: (order: Order, newState: Order["state"]) => void;
 };
 
@@ -31,9 +30,6 @@ export type OrdersProviderProps = {
 export function OrdersProvider(props: OrdersProviderProps) {
   const [orders, setOrders] = useState<Array<Order>>([]);
 
-  const { riders, assignedOrders } = useRiders();
-  console.log( assignedOrders );
-
   useEffect(() => {
     const orderOrchestrator = new OrderOrchestrator();
     const listener = orderOrchestrator.run();
@@ -42,26 +38,31 @@ export function OrdersProvider(props: OrdersProviderProps) {
     });
   }, []);
 
-  const pickup = (order: Order) => {
-    debugger;
-    //verificacion solo si se clickea sobre el icono del raider
-    const orderFinded = orders.find(
-      (o) => o.id === order.id && o.state === "READY"
-    );
+  const pickup = (order: Order, changeForRequestRider?: boolean) => {
+    //si es cambiada por el usuarioUI
 
-    if (!orderFinded) {
-      alert("La orden no está lista para ser recogida");
-      return;
-    }
+    let orderFinded;
 
-    setTimeout(() => {
+    if (changeForRequestRider) {
+      let orderFinded = orders.find(
+        (o) => o.id === order.id && o.state === "READY"
+      );
+
+      if (!orderFinded) {
+        alert("La orden no está lista para ser recogida");
+        return;
+      }
+
       setOrders((prev) =>
         prev.map((o) =>
-          o.id === orderFinded.id ? { ...o, state: "DELIVERED" } : o
+          o.id === orderFinded?.id ? { ...o, state: "DELIVERED" } : o
         )
       );
-    }, 5000);
-
+    } else {
+      let orderFinded = orders.find(
+        (o) => o.id === order.id && o.state === "READY"
+      );
+    }
   };
 
   const uploadState = (order: Order, newState: Order["state"]) => {
@@ -83,13 +84,6 @@ export function OrdersProvider(props: OrdersProviderProps) {
     console.log("Orden actualizada");
   };
 
-  useEffect(() => {
-    const orderStateChanged = orders.find((orden) => orden.state === "READY");
-
-    if (orderStateChanged) {
-      pickup(orderStateChanged);
-    }
-  }, [orders]);
 
   const context = {
     orders,

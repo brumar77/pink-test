@@ -11,7 +11,7 @@ export default function Rider(props: RiderProps) {
     if (orderForRider) {
 
       console.log("orderForRider: ", orderForRider);
-      pickup(orderForRider);
+      pickup(orderForRider, true);
       console.log("Se ha pedido a pickup");
     } else {
       console.error('La función pickup o el pedido orderForRider es indefinido.');

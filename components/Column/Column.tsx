@@ -1,6 +1,7 @@
 import { useState } from "react";
 import s from "./Column.module.scss";
 import { Order } from "@/dtos/Order.dto";
+import Modal from "../Modal/Modal";
 
 export type ColumnProps = {
   orders: Array<Order>;
@@ -12,16 +13,16 @@ export type ColumnProps = {
 };
 
 export default function Column(props: ColumnProps) {
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+
   const handleChangeState = (order: Order, newState: Order["state"]) => {
     if (props.onStateChange) {
       props.onStateChange(order, newState);
     }
   };
 
-  const [showModal, setShowModal] = useState<boolean>(false);
-
-  const toggleModal = () => {
-    setShowModal(!showModal);
+  const toggleModal = (orderId: string) => {
+    setSelectedOrderId(selectedOrderId === orderId ? null : orderId);
   };
 
   return (
@@ -35,24 +36,29 @@ export default function Column(props: ColumnProps) {
           onClick={() => props.onClick && props.onClick(order)}
           className={s["pk-card"]}
         >
-          <div>
+          <div className={s["pk-card__order"]}>
             <span>
-              orden: <b>{order.id}</b>
+              Orden: <b>{order.id}</b>
             </span>
           </div>
           <div>
             {order.items.map((item) => (
-              <div></div>
+              <div key={item.id} className={s["pk-card__item"]}>
+                <span>
+                  Name: <b>{item.name}</b>
+                </span>
+              </div>
             ))}
           </div>
 
-          <div className={s["eye-div"]} onClick={toggleModal}>
-            <i className="fa fa-eye" aria-hidden="true"></i>
+          <div className={s["eye-div"]} onClick={() => toggleModal(order.id)}>
+            <span role="img" aria-label="eye" className={s["eye-icon"]}>
+              👁️‍🗨️
+            </span>
           </div>
 
           <div className={s["btn-container"]}>
             {/* Botón Anterior */}
-
             {order.state !== "PENDING" && (
               <button
                 className={s["btn-anterior"]}
@@ -81,6 +87,14 @@ export default function Column(props: ColumnProps) {
           </div>
         </div>
       ))}
+
+      {/* Mostrar el Modal si hay una orden seleccionada */}
+      {selectedOrderId && (
+        <Modal
+          data={props.orders.find((order) => order.id === selectedOrderId) || null}
+          onClose={() => toggleModal(selectedOrderId)}
+        />
+      )}
     </div>
   );
 }

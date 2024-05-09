@@ -53,7 +53,7 @@ export function RidersProvider(props: RidersProviderProps) {
   useEffect(() => {
     riders.forEach((rider) => {
       const orderToPickup = orders.find(
-        (order) => order.id === rider.orderWanted && order.state === "READY"
+        (order) => order.id === rider.orderWanted && order.state === "DELIVERED"
       );
 
       setTimeout(() => {
@@ -65,7 +65,7 @@ export function RidersProvider(props: RidersProviderProps) {
             prev.filter((orderId) => orderId !== rider.orderWanted)
           );
         }
-      }, 5000);
+      }, 1000);
     });
   }, [orders]);
 
