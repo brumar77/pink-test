@@ -19,3 +19,18 @@ Buscamos un Problem solver! se creativo e inteligente pero astuto; mvp first. Pr
 3. Envía el enlace a tu repositorio a la dirección de correo electrónico indicada en la convocatoria del desafío.
 
 ¡Estamos emocionados de ver tu creatividad y habilidades en acción! Buena suerte y que empiece el desafío <3
+
+# Para correr el programa
+
+1. Deberas abrir en la raiz del proyecto una terminal.
+2. En la terminal deberas ejecutar el siguiente comando:
+
+   ```bash
+   npm i
+   ```
+3. Una vez creado los modulos, en la terminal corre lo siguiente:
+
+    ```bash
+    npm run dev
+    ```
+4. Ahora, abre el navegador y ve al http://localhost:3000
