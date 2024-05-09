@@ -1,8 +1,25 @@
 import { Rider as RiderProps } from "@/dtos/Rider.dto";
 import s from "./Rider.module.scss";
+import { useOrders } from "@/contexts/Orders.context";
 export default function Rider(props: RiderProps) {
+
+  const { orders, pickup } = useOrders();
+
+  const orderForRider = orders.find((order) => order.id === props.orderWanted);
+
+  const handlePickup = () => {
+    if (orderForRider) {
+
+      console.log("orderForRider: ", orderForRider);
+      pickup(orderForRider, true);
+      console.log("Se ha pedido a pickup");
+    } else {
+      console.error('La función pickup o el pedido orderForRider es indefinido.');
+    }
+  };
+
   return (
-    <div onClick={() => props.pickup()} className={s["pk-rider__container"]}>
+    <div onClick={handlePickup} className={s["pk-rider__container"]}>
       <div className={s["pk-rider__order"]}>
         <b>{props.orderWanted} !!</b>
       </div>
